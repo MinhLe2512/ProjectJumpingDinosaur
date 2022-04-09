@@ -85,7 +85,7 @@ function gameLoop() {
         timer = Math.floor(Math.random() * 101) + 100;
         let spike = createSpikes();
         spikes.push(spike);
-        if (spikeSpeed <= 5)
+        if (spikeSpeed <= 7)
             spikeSpeed += 0.05;
     }
     console.log(spikes.length);
