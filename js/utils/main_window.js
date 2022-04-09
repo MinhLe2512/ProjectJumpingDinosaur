@@ -1,8 +1,8 @@
-let app, player, jumpAt;
+let app, player, jumpAt, background;
 let keys = {};
 
 let gravity = 1, direction = -1;
-let power = 20;
+let power = 10;
 
 window.onload = function() {
     app = new PIXI.Application(
@@ -13,6 +13,16 @@ window.onload = function() {
         }
     );
     document.body.appendChild(app.view);
+
+    //Platform
+    background = new PIXI.Graphics();
+    background.beginFill(0xffffff);
+    background.lineStyle(3, 0xcccccc, 1);
+    background.drawRect(0, window.innerHeight / 2,
+                        window.innerWidth,
+                        window.innerHeight);
+    background.endFill();
+    app.stage.addChild(background);
 
     player = new PIXI.Sprite.from('images/ezgif-4-0c1b2d3b5e-png-24x24-sprite-png/tile000.png');
     player.anchor.set(0.5);
