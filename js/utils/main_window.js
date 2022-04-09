@@ -5,7 +5,7 @@ let gravity = 1, direction = -1;
 let power = 15;
 let spikeSpeed = 3;
 let spikes = [];
-var timer = 0;
+var timer = 100;
 
 window.onload = function() {
     app = new PIXI.Application(
@@ -80,15 +80,14 @@ function gameLoop() {
     if (keys[32] == true) {
         playerJump();
     }
-    timer++;
-    if (timer >= 100) {
-        timer = 0;
+    timer--;
+    if (timer <= 0) {
+        timer = Math.floor(Math.random() * 101) + 100;
         let spike = createSpikes();
         spikes.push(spike);
+        if (spikeSpeed <= 5)
+            spikeSpeed += 0.05;
     }
-    // if (spikeSpeed <= 7)
-    //     spikeSpeed += app.ticker.deltaMs; 
-    //spike = createSpikes();
     console.log(spikes.length);
     moveSpike();
 }
