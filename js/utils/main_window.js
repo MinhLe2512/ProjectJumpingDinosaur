@@ -5,7 +5,7 @@ let gravity = 1, direction = -1;
 let power = 15;
 let spikeSpeed = 3;
 let spikes = [];
-var timer = 100;
+var timer = 100, range = 100;
 
 window.onload = function() {
     app = new PIXI.Application(
@@ -82,13 +82,18 @@ function gameLoop() {
     }
     timer--;
     if (timer <= 0) {
-        timer = Math.floor(Math.random() * 101) + 100;
+        timer = Math.floor(Math.random() * 51) + range;
         let spike = createSpikes();
         spikes.push(spike);
-        if (spikeSpeed <= 7)
-            spikeSpeed += 0.05;
+        if (spikeSpeed <= 10) {
+            spikeSpeed += 0.1;
+            spikeSpeed.toFixed(2);
+        }
+        if (range >= 20)
+            range -= 1;
+        console.log(timer);
     }
-    console.log(spikes.length);
+    
     moveSpike();
 }
 
