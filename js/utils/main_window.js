@@ -2,7 +2,7 @@ let app, player, jumpAt, background;
 let keys = {};
 
 let gravity = 1, direction = -1;
-let power = 10;
+let power = 12;
 
 window.onload = function() {
     app = new PIXI.Application(
