@@ -91,20 +91,12 @@ window.onload = function() {
         keys[e.keyCode] = false;
     });
 
-<<<<<<< HEAD
-    //app.stage.addChild(player);
-    //app.ticker.add(gameLoop);
-}
+
 
 function doneLoading(e) {
     createPlayerSheet();
     createPlayer();
     app.ticker.add(gameLoop);
-=======
-    // app.stage.addChild(player);
-    // app.ticker.add(gameLoop);
-
->>>>>>> 34bf83cee28da3b87f1b72454d5a11e31b9f2961
 }
 
 function createPlayerSheet() {
@@ -241,14 +233,9 @@ function moveSpike() {
 
         
         if (rectIntersects(player, spikes[i])) {
-<<<<<<< HEAD
             player.textures = playerSheet.dead;
             player.play();
             app.ticker.stop();
-=======
-            // add game over screen
-            app.stage.addChild(over);
->>>>>>> 34bf83cee28da3b87f1b72454d5a11e31b9f2961
             console.log("true");
             app.ticker.stop();
         }
@@ -282,9 +269,7 @@ window.onresize = function(){
     player.x = app.view.width / 2;
     player.y = app.view.height / 2;
     
-};
-<<<<<<< HEAD
-=======
+}
 
 // Calling needed functions
 function onButtonDown() {
@@ -295,7 +280,3 @@ function onButtonDown() {
     app.ticker.add(gameLoop);
     this.interactive = false;
 }
-
-
-
->>>>>>> 34bf83cee28da3b87f1b72454d5a11e31b9f2961
