@@ -2,10 +2,12 @@ let app, player, jumpAt, background;
 let keys = {};
 
 let gravity = 1, direction = -1;
-let power = 15;
+let power = 20;
 let spikeSpeed = 3;
 let spikes = [];
 var timer = 100, range = 100;
+
+let gameOver = false;
 
 window.onload = function() {
     app = new PIXI.Application(
@@ -85,16 +87,20 @@ function gameLoop() {
         timer = Math.floor(Math.random() * 51) + range;
         let spike = createSpikes();
         spikes.push(spike);
+
+        // console.log(rectIntersects(player, spike));
+
         if (spikeSpeed <= 10) {
             spikeSpeed += 0.1;
             spikeSpeed.toFixed(2);
         }
         if (range >= 20)
             range -= 1;
-        console.log(timer);
+        // console.log(timer);
     }
-    
+
     moveSpike();
+    
 }
 
 function createSpikes() {
@@ -126,12 +132,34 @@ function moveSpike() {
     for (let i = 0; i < spikes.length; i++) {
         spikes[i].position.x -= spikes[i].speed * app.ticker.deltaTime;
 
+        if (rectIntersects(player, spikes[i])) {
+            app.ticker.stop();
+            console.log("true");
+        }
+
         if (spikes[i].position.x < 0) {
             spikes[i].dead = true;
             app.stage.removeChild(spikes[i]);
             spikes.splice(i, 1);
         }
+
     }
+}
+
+function rectIntersects(a, b) {
+    let aBox = a.getBounds();
+    let bBox = b.getBounds();
+    
+    console.log(aBox.width);
+    console.log(bBox.width);
+    aBox.width -= 10;
+    aBox.height -= 20;
+    bBox.height -= 10;
+    bBox.width -= 10;
+    return (aBox.x + aBox.width > bBox.x && 
+            aBox.x < bBox.x + bBox.width &&
+            aBox.y + aBox.height > bBox.y &&
+            aBox.y < bBox.y + bBox.height);
 }
 window.onresize = function(){
     app.renderer.resize(window.innerWidth, window.innerHeight);
@@ -139,4 +167,6 @@ window.onresize = function(){
     player.y = app.view.height / 2;
     
 };
+
+
 
