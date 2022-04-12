@@ -8,6 +8,7 @@ let spikes = [];
 var timer = 100, range = 100;
 
 let gameOver = false;
+let playerSheet = {};
 
 window.onload = function() {
     app = new PIXI.Application(
@@ -29,14 +30,15 @@ window.onload = function() {
     background.endFill();
     app.stage.addChild(background);
 
-    player = new PIXI.Sprite.from('images/ezgif-4-0c1b2d3b5e-png-24x24-sprite-png/tile000.png');
-    player.anchor.set(0.5);
-    player.scale.set(2, 2);
-    player.x = app.view.width / 2;
-    player.y = app.view.height / 2;
+    //player = new PIXI.Sprite.from('images/ezgif-4-0c1b2d3b5e-png-24x24-sprite-png/tile000.png');
+    //player.anchor.set(0.5);
+    //player.scale.set(2, 2);
+    //player.x = app.view.width / 2;
+    //player.y = app.view.height / 2;
+    app.loader.add("DinoSpritesdoux", "images/dinoCharactersVersion1.1/sheets/DinoSprites - doux.png");
+    app.loader.load(doneLoading);
 
-
-    jumpAt = player.y;
+    jumpAt = app.view.height / 2;
     //Mouse click interactions
     app.view.addEventListener('click', playerJump);
 
@@ -47,8 +49,57 @@ window.onload = function() {
         keys[e.keyCode] = false;
     });
 
-    app.stage.addChild(player);
+    //app.stage.addChild(player);
+    //app.ticker.add(gameLoop);
+}
+
+function doneLoading(e) {
+    createPlayerSheet();
+    createPlayer();
     app.ticker.add(gameLoop);
+}
+
+function createPlayerSheet() {
+    let ssheet = new PIXI.BaseTexture.from(app.loader.resources["DinoSpritesdoux"].url);
+    let w = 24;
+    let h = 24;
+    
+    playerSheet["standing"] = [
+    new PIXI.Texture(ssheet, new PIXI.Rectangle(3 * w, 0, w, h))
+    ];
+    playerSheet["dead"] = [
+    new PIXI.Texture(ssheet, new PIXI.Rectangle(16 * w, 0, w, h))
+    ];
+    playerSheet["running"] = [
+        new PIXI.Texture(ssheet, new PIXI.Rectangle(4 * w, 0, w, h)),
+        new PIXI.Texture(ssheet, new PIXI.Rectangle(5 * w, 0, w, h)),
+        new PIXI.Texture(ssheet, new PIXI.Rectangle(6 * w, 0, w, h)),
+        new PIXI.Texture(ssheet, new PIXI.Rectangle(7 * w, 0, w, h)),
+        new PIXI.Texture(ssheet, new PIXI.Rectangle(8 * w, 0, w, h)),
+        new PIXI.Texture(ssheet, new PIXI.Rectangle(9 * w, 0, w, h)),
+        new PIXI.Texture(ssheet, new PIXI.Rectangle(10 * w, 0, w, h))
+    ];
+    playerSheet["jumping"] = [
+        new PIXI.Texture(ssheet, new PIXI.Rectangle(17 * w, 0, w, h)),
+        new PIXI.Texture(ssheet, new PIXI.Rectangle(18 * w, 0, w, h)),
+        new PIXI.Texture(ssheet, new PIXI.Rectangle(19 * w, 0, w, h)),
+        new PIXI.Texture(ssheet, new PIXI.Rectangle(20 * w, 0, w, h)),
+        new PIXI.Texture(ssheet, new PIXI.Rectangle(21 * w, 0, w, h)),
+        new PIXI.Texture(ssheet, new PIXI.Rectangle(22 * w, 0, w, h)),
+        new PIXI.Texture(ssheet, new PIXI.Rectangle(23 * w, 0, w, h))
+    ];
+}
+
+function createPlayer() {
+    player = new PIXI.AnimatedSprite(playerSheet.standing);
+    player.anchor.set(0.5);
+    player.animationSpeed = .5;
+    player.loop = false;
+    player.x = app.view.width / 2;
+    player.y = app.view.height / 2;
+    player.scale.set(2, 2);
+    app.stage.addChild(player);
+    player.play();
 }
 
 //function jump
@@ -70,7 +121,11 @@ function playerJump() {
         player.y = jumpAt;
         return;
       }
-  
+      
+      if (!player.playing) {
+        player.textures = playerSheet.jumping;
+        player.play();
+      }
       player.y = jumpAt + (jumpHeight * direction);
       time += deltaMs;
     }
@@ -79,6 +134,10 @@ function playerJump() {
 }
 
 function gameLoop() {
+    if (!player.playing) {
+        player.textures = playerSheet.running;
+        player.play();
+    }
     if (keys[32] == true) {
         playerJump();
     }
@@ -133,6 +192,8 @@ function moveSpike() {
         spikes[i].position.x -= spikes[i].speed * app.ticker.deltaTime;
 
         if (rectIntersects(player, spikes[i])) {
+            player.textures = playerSheet.dead;
+            player.play();
             app.ticker.stop();
             console.log("true");
         }
@@ -150,8 +211,8 @@ function rectIntersects(a, b) {
     let aBox = a.getBounds();
     let bBox = b.getBounds();
     
-    console.log(aBox.width);
-    console.log(bBox.width);
+    //console.log(aBox.width);
+    //console.log(bBox.width);
     aBox.width -= 10;
     aBox.height -= 20;
     bBox.height -= 10;
@@ -167,6 +228,3 @@ window.onresize = function(){
     player.y = app.view.height / 2;
     
 };
-
-
-
