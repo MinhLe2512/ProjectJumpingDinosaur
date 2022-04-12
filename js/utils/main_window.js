@@ -9,15 +9,57 @@ var timer = 100, range = 100;
 
 let gameOver = false;
 
+let home_background, game_background, over;
+
 window.onload = function() {
     app = new PIXI.Application(
         {
             width: window.innerWidth,
             height: window.innerHeight,
-            backgroundColor: 0x34e5eb
+            backgroundColor: 0xffffff
         }
     );
     document.body.appendChild(app.view);
+
+    // Declare over image
+    over = new PIXI.Sprite.from("images/gameover.png");
+    over.anchor.set(0.5);
+    over.x = window.innerWidth / 2;
+    over.y = window.innerHeight / 4 + 20;
+
+    // Declare a start button
+    const textureButton = PIXI.Texture.from('./images/button.png');
+    const button = new PIXI.Sprite(textureButton);
+    button.anchor.set(0.5);
+    button.x = window.innerWidth/2;
+    button.y = window.innerHeight/2;
+
+    button.interactive = true;
+    button.buttonMode = true;
+    button.on('pointerdown', onButtonDown); // click on button, the game will start
+
+    // Start screen background
+    home_background = new PIXI.Graphics();
+    home_background.beginFill(0xffffff);
+    home_background.drawRect(0,0,
+                        window.innerWidth,
+                        window.innerHeight);
+    home_background.endFill();
+
+    // Game background
+    game_background = new PIXI.Graphics();
+    game_background.beginFill(0x34e5eb);
+    game_background.drawRect(0,0,
+                        window.innerWidth,
+                        window.innerHeight);
+    game_background.endFill();
+
+
+    home_background.addChild(button);
+    app.stage.addChild(home_background);
+
+
+
 
     //Platform
     background = new PIXI.Graphics();
@@ -27,7 +69,7 @@ window.onload = function() {
                         window.innerWidth,
                         window.innerHeight);
     background.endFill();
-    app.stage.addChild(background);
+    // app.stage.addChild(background);
 
     player = new PIXI.Sprite.from('images/ezgif-4-0c1b2d3b5e-png-24x24-sprite-png/tile000.png');
     player.anchor.set(0.5);
@@ -47,8 +89,9 @@ window.onload = function() {
         keys[e.keyCode] = false;
     });
 
-    app.stage.addChild(player);
-    app.ticker.add(gameLoop);
+    // app.stage.addChild(player);
+    // app.ticker.add(gameLoop);
+
 }
 
 //function jump
@@ -132,9 +175,12 @@ function moveSpike() {
     for (let i = 0; i < spikes.length; i++) {
         spikes[i].position.x -= spikes[i].speed * app.ticker.deltaTime;
 
+        
         if (rectIntersects(player, spikes[i])) {
-            app.ticker.stop();
+            // add game over screen
+            app.stage.addChild(over);
             console.log("true");
+            app.ticker.stop();
         }
 
         if (spikes[i].position.x < 0) {
@@ -167,6 +213,16 @@ window.onresize = function(){
     player.y = app.view.height / 2;
     
 };
+
+// Calling needed functions
+function onButtonDown() {
+    this.isdown = false;
+    app.stage.addChild(game_background);
+    app.stage.addChild(background);
+    app.stage.addChild(player);
+    app.ticker.add(gameLoop);
+    this.interactive = false;
+}
 
 
 
