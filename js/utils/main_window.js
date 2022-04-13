@@ -6,9 +6,11 @@ let power = 20;
 let spikeSpeed = 3;
 let spikes = [];
 var timer = 100, range = 100;
-
+let home_background, game_background, over;
 let gameOver = false;
 let playerSheet = {};
+let startTime;
+let text;
 
 window.onload = function() {
     app = new PIXI.Application(
@@ -20,6 +22,47 @@ window.onload = function() {
     );
     document.body.appendChild(app.view);
 
+    // Declare score
+    text = new PIXI.Text('0',{fill: "#fafafa", fontFamily: "Impact", align : 'center', fontSize: 32});
+    text.x = 40;
+    text.y = 20;    
+
+    // Declare game over notification
+    over = new PIXI.Sprite.from("images/gameover.png");
+    over.anchor.set(0.5);
+    over.x = window.innerWidth / 2;
+    over.y = window.innerHeight / 4 + 20;
+
+    // Declare a start button
+    const textureButton = PIXI.Texture.from('./images/button.png');
+    const button = new PIXI.Sprite(textureButton);
+    button.anchor.set(0.5);
+    button.x = window.innerWidth/2;
+    button.y = window.innerHeight/2;
+
+    button.interactive = true;
+    button.buttonMode = true;
+    button.on('pointerdown', onButtonDown); // click on button, the game will start
+
+    // Start screen background
+    home_background = new PIXI.Graphics();
+    home_background.beginFill(0xffffff);
+    home_background.drawRect(0,0,
+                        window.innerWidth,
+                        window.innerHeight);
+    home_background.endFill();
+
+    // Game background
+    game_background = new PIXI.Graphics();
+    game_background.beginFill(0x34e5eb);
+    game_background.drawRect(0,0,
+                        window.innerWidth,
+                        window.innerHeight);
+    game_background.endFill();
+
+    home_background.addChild(button);
+    app.stage.addChild(home_background);
+
     //Platform
     background = new PIXI.Graphics();
     background.beginFill(0xffffff);
@@ -28,15 +71,13 @@ window.onload = function() {
                         window.innerWidth,
                         window.innerHeight);
     background.endFill();
-    app.stage.addChild(background);
 
     //player = new PIXI.Sprite.from('images/ezgif-4-0c1b2d3b5e-png-24x24-sprite-png/tile000.png');
     //player.anchor.set(0.5);
     //player.scale.set(2, 2);
     //player.x = app.view.width / 2;
     //player.y = app.view.height / 2;
-    app.loader.add("DinoSpritesdoux", "images/dinoCharactersVersion1.1/sheets/DinoSprites - doux.png");
-    app.loader.load(doneLoading);
+    
 
     jumpAt = app.view.height / 2;
     //Mouse click interactions
@@ -48,10 +89,11 @@ window.onload = function() {
     window.addEventListener("keyup", function(e) {
         keys[e.keyCode] = false;
     });
+}
 
     //app.stage.addChild(player);
     //app.ticker.add(gameLoop);
-}
+
 
 function doneLoading(e) {
     createPlayerSheet();
@@ -126,6 +168,7 @@ function playerJump() {
         player.textures = playerSheet.jumping;
         player.play();
       }
+      
       player.y = jumpAt + (jumpHeight * direction);
       time += deltaMs;
     }
@@ -155,9 +198,10 @@ function gameLoop() {
         }
         if (range >= 20)
             range -= 1;
-        // console.log(timer);
     }
-
+    let milliSeconds = new Date() - startTime;
+    //console.log(Math.round(milliSeconds/1000) + " seconds");
+    text.text = 'Score: ' + (Math.round(milliSeconds/1000 * spikeSpeed/4)).toString();
     moveSpike();
     
 }
@@ -192,10 +236,13 @@ function moveSpike() {
         spikes[i].position.x -= spikes[i].speed * app.ticker.deltaTime;
 
         if (rectIntersects(player, spikes[i])) {
+            
+            app.stage.addChild(over);
+            
             player.textures = playerSheet.dead;
+
             player.play();
             app.ticker.stop();
-            console.log("true");
         }
 
         if (spikes[i].position.x < 0) {
@@ -227,4 +274,16 @@ window.onresize = function(){
     player.x = app.view.width / 2;
     player.y = app.view.height / 2;
     
-};
+}
+
+// Calling needed functions
+function onButtonDown() {
+    startTime = new Date();
+    this.isdown = true;
+    app.stage.addChild(game_background);
+    app.stage.addChild(background);
+    app.loader.add("DinoSpritesdoux", "images/dinoCharactersVersion1.1/sheets/DinoSprites - doux.png");
+    app.loader.load(doneLoading);
+    app.stage.addChild(text);
+    this.interactive = false;
+}
