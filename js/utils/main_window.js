@@ -63,7 +63,7 @@ function initialize_Start_Screen (parents)
     startButton.anchor.set(0.5);
     startButton.scale.set(0.75, 0.5);
     startButton.x = window.innerWidth/2;
-    startButton.y = window.innerHeight/2 + 100;
+    startButton.y = window.innerHeight/2 + poster.height;
 
     startButton.interactive = true;
     startButton.buttonMode = true;
@@ -91,8 +91,8 @@ function initialize_Play_Screen(parents)
 
     //Highscore Text
     highScoreText = new PIXI.Text('0', {fill: "#fafafa", fontFamily: "Impact", align : 'center', fontSize: 20});
-    highScoreText.x = window.innerWidth / 10;
-    highScoreText.y = window.innerHeight / 10;
+    highScoreText.x = window.innerWidth / 15;
+    highScoreText.y = window.innerHeight / 8;
 
     // Game background
     game_background = new PIXI.Graphics();
@@ -348,9 +348,18 @@ window.onresize = function(){
     app.renderer.resize(window.innerWidth, window.innerHeight);
     player.x = app.view.width / 2;
     player.y = app.view.height / 2;
-    //Resize high score text
+
+    reTry.x = window.innerWidth/2;
+    reTry.y = window.innerHeight/3;
+
+    poster.x = window.innerWidth / 2;
+    poster.y = window.innerHeight / 3;
+
     highScoreText.x = window.innerWidth / 10;
     highScoreText.y = window.innerHeight / 10;
+
+    startButton.x = window.innerWidth/2;
+    startButton.y = window.innerHeight/3;
 };
 
 // Calling needed functions
