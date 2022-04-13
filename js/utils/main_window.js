@@ -6,13 +6,15 @@ let power = 20;
 let spikeSpeed = 3;
 let spikes = [];
 var timer = 100, range = 100;
-let home_background, game_background, over, poster; // game background
-let textureButton, textureButton1, startButton, reTry; // satrt button, replay button and their textures
-let gameOver = false; // game done flag
-let playerSheet = {}; 
-let startTime;  // Time running variable for caculating score
-let text;       // Saving and display score
-let Score = 0; 
+let home_background, game_background, over, poster;
+let textureButton, textureButton1, startButton, reTry;
+let gameOver = false;
+let playerSheet = {};
+let startTime;
+//Game Text
+let text, highScoreText;
+//Score
+let score = 0, highScore = 0;
 
 var scene1 = new PIXI.Container();   // container for start screen
 var scene2 = new PIXI.Container();   // container for play screen
@@ -87,6 +89,11 @@ function initialize_Play_Screen(parents)
     text.x = window.innerWidth / 15;
     text.y = window.innerHeight/ 15;  
 
+    //Highscore Text
+    highScoreText = new PIXI.Text('0', {fill: "#fafafa", fontFamily: "Impact", align : 'center', fontSize: 20});
+    highScoreText.x = window.innerWidth / 10;
+    highScoreText.y = window.innerHeight / 10;
+
     // Game background
     game_background = new PIXI.Graphics();
     game_background.beginFill(0x34e5eb);
@@ -119,7 +126,6 @@ function initialize_Over_Screen(parents)
     
     // Declare a retry button
     textureButton1 = PIXI.Texture.from('./images/replay.png');
-    // reTry = new PIXI.Sprite.from("./images/name.png");
     reTry = new PIXI.Sprite(textureButton1);
     reTry.anchor.set(0.5);
     reTry.scale.set(0.5, 0.5);
@@ -215,6 +221,7 @@ function playerJump() {
     PIXI.Ticker.shared.add(tick);
 }
 
+//Game Loop
 function gameLoop() {
     if (!player.playing) {
         player.textures = playerSheet.running;
@@ -241,12 +248,18 @@ function gameLoop() {
     let milliSeconds = new Date() - startTime;
 
     //console.log(Math.round(milliSeconds/1000) + " seconds");
-    Score = Math.round(milliSeconds/1000 * spikeSpeed/4);
-    text.text = 'Score: ' + (Score).toString();
+    score = Math.round(milliSeconds/1000 * spikeSpeed/4);
+    text.text = 'Score: ' + (score).toString();
+
+    if (score > highScore) {
+        highScore = score;
+    }
+
+    highScoreText.text = 'HighScore: ' + highScore.toString();
     moveSpike();
 
     if (gameOver) {
-        Score = 0;
+        score = 0;
         gameOver = false;
         app.ticker.stop();
         scene3.visible = true;
@@ -271,9 +284,11 @@ function gameLoop() {
     }
 }
 
+//Spawner
 function createSpikes() {
     var val = Math.floor(Math.random() * 3) + 1;
     let spike;
+    //Random sprites
     switch(val) {
         case 1:
             spike = new PIXI.Sprite.from("images/cactus1.png");
@@ -297,6 +312,7 @@ function createSpikes() {
     return spike;
 }
 
+//Move spikes
 function moveSpike() {
     for (let i = 0; i < spikes.length; i++) {
         spikes[i].position.x -= spikes[i].speed * app.ticker.deltaTime;
@@ -332,7 +348,9 @@ window.onresize = function(){
     app.renderer.resize(window.innerWidth, window.innerHeight);
     player.x = app.view.width / 2;
     player.y = app.view.height / 2;
-    
+    //Resize high score text
+    highScoreText.x = window.innerWidth / 10;
+    highScoreText.y = window.innerHeight / 10;
 };
 
 // Calling needed functions
@@ -346,7 +364,7 @@ function onButtonDown() {
     app.loader.add("DinoSpritesdoux", "images/dinoCharactersVersion1.1/sheets/DinoSprites - doux.png");
     app.loader.load(doneLoading); // Load assets
     scene2.addChild(text);
-
+    scene2.addChild(highScoreText);
     jumpAt = app.view.height / 2;
     //Mouse click interactions
     app.view.addEventListener('click', playerJump);
