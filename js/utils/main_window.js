@@ -6,7 +6,6 @@ let power = 20;
 let spikeSpeed = 3;
 let spikes = [];
 var timer = 100, range = 100;
-
 let home_background, game_background, over;
 let gameOver = false;
 let playerSheet = {};
@@ -73,15 +72,12 @@ window.onload = function() {
                         window.innerHeight);
     background.endFill();
 
-    // app.stage.addChild(background);
-
     //player = new PIXI.Sprite.from('images/ezgif-4-0c1b2d3b5e-png-24x24-sprite-png/tile000.png');
     //player.anchor.set(0.5);
     //player.scale.set(2, 2);
     //player.x = app.view.width / 2;
     //player.y = app.view.height / 2;
-    app.loader.add("DinoSpritesdoux", "images/dinoCharactersVersion1.1/sheets/DinoSprites - doux.png");
-    app.loader.load(doneLoading);
+    
 
     jumpAt = app.view.height / 2;
     //Mouse click interactions
@@ -95,7 +91,11 @@ window.onload = function() {
     });
 }
 
-function doneLoading() {
+    //app.stage.addChild(player);
+    //app.ticker.add(gameLoop);
+
+
+function doneLoading(e) {
     createPlayerSheet();
     createPlayer();
     app.ticker.add(gameLoop);
@@ -168,6 +168,7 @@ function playerJump() {
         player.textures = playerSheet.jumping;
         player.play();
       }
+      
       player.y = jumpAt + (jumpHeight * direction);
       time += deltaMs;
     }
@@ -235,7 +236,6 @@ function moveSpike() {
         spikes[i].position.x -= spikes[i].speed * app.ticker.deltaTime;
 
         if (rectIntersects(player, spikes[i])) {
-
             
             app.stage.addChild(over);
             
