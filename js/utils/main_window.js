@@ -6,18 +6,18 @@ let power = 20;
 let spikeSpeed = 3;
 let spikes = [];
 var timer = 100, range = 100;
-let home_background, game_background, over, poster;
-let textureButton, textureButton1, startButton, reTry;
-let gameOver = false;
-let playerSheet = {};
-let startTime;
-let text;
-let Score = 0;
+let home_background, game_background, over, poster; // game background
+let textureButton, textureButton1, startButton, reTry; // satrt button, replay button and their textures
+let gameOver = false; // game done flag
+let playerSheet = {}; 
+let startTime;  // Time running variable for caculating score
+let text;       // Saving and display score
+let Score = 0; 
 
-var scene1 = new PIXI.Container();   
-var scene2 = new PIXI.Container();
-var scene3 = new PIXI.Container();
-var enemy = new PIXI.Container();
+var scene1 = new PIXI.Container();   // container for start screen
+var scene2 = new PIXI.Container();   // container for play screen
+var scene3 = new PIXI.Container();   // conatiner for end game
+var enemy = new PIXI.Container();    // container for enemy objects
 
 
 window.onload = function() {
@@ -29,7 +29,7 @@ window.onload = function() {
         }
     );
     document.body.appendChild(app.view);
-    
+    // Create sences and add to stage
     initialize_Start_Screen(scene1);
     initialize_Play_Screen(scene2);
     initialize_Over_Screen(scene3);
@@ -84,8 +84,8 @@ function initialize_Play_Screen(parents)
 {
     // Declare score
     text = new PIXI.Text('0',{fill: "#fafafa", fontFamily: "Impact", align : 'center', fontSize: 32});
-    text.x = 40;
-    text.y = 20;  
+    text.x = window.innerWidth / 15;
+    text.y = window.innerHeight/ 15;  
 
     // Game background
     game_background = new PIXI.Graphics();
@@ -114,7 +114,7 @@ function initialize_Over_Screen(parents)
     over = new PIXI.Sprite.from("images/gameover.png");
     over.anchor.set(0.5);
     over.x = window.innerWidth / 2;
-    over.y = window.innerHeight / 4 + 20;
+    over.y = window.innerHeight / 4;
 
     
     // Declare a retry button
@@ -123,8 +123,8 @@ function initialize_Over_Screen(parents)
     reTry = new PIXI.Sprite(textureButton1);
     reTry.anchor.set(0.5);
     reTry.scale.set(0.5, 0.5);
-    reTry.x = window.innerWidth/2 - 25;
-    reTry.y = window.innerHeight/4 + 90;
+    reTry.x = window.innerWidth/2;
+    reTry.y = window.innerHeight/3;
     
     reTry.interactive = true;
     reTry.buttonMode = true;
@@ -302,11 +302,8 @@ function moveSpike() {
         spikes[i].position.x -= spikes[i].speed * app.ticker.deltaTime;
 
         if (rectIntersects(player, spikes[i])) {
-            
             player.textures = playerSheet.dead;
             player.play();
-            // app.ticker.stop();
-            // scene3.visible = true;
             gameOver = true;
         }
 
@@ -321,9 +318,6 @@ function moveSpike() {
 function rectIntersects(a, b) {
     let aBox = a.getBounds();
     let bBox = b.getBounds();
-    
-    //console.log(aBox.width);
-    //console.log(bBox.width);
     aBox.width -= 10;
     aBox.height -= 20;
     bBox.height -= 10;
@@ -345,12 +339,12 @@ window.onresize = function(){
 function onButtonDown() {
     this.interactive = false;
 
-    scene1.visible = false;
-    scene2.visible = true;
+    scene1.visible = false;  // hide scene 1 
+    scene2.visible = true;   // turn on scene 2
 
-    startTime = new Date();
+    startTime = new Date();  // using this variable for caculating score
     app.loader.add("DinoSpritesdoux", "images/dinoCharactersVersion1.1/sheets/DinoSprites - doux.png");
-    app.loader.load(doneLoading);
+    app.loader.load(doneLoading); // Load assets
     scene2.addChild(text);
 
     jumpAt = app.view.height / 2;
@@ -364,6 +358,7 @@ function onButtonDown() {
     });
 }
 
+// Replay-button's function
 function reTryButtonDown(){
     startTime = new Date();
     app.ticker.start();
