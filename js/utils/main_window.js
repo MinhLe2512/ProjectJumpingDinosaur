@@ -11,8 +11,10 @@ let textureButton, textureButton1, startButton, reTry;
 let gameOver = false;
 let playerSheet = {};
 let startTime;
-let text;
-let Score = 0;
+//Game Text
+let text, highScoreText;
+//Score
+let score = 0, highScore = 0;
 
 var scene1 = new PIXI.Container();   
 var scene2 = new PIXI.Container();
@@ -86,6 +88,11 @@ function initialize_Play_Screen(parents)
     text = new PIXI.Text('0',{fill: "#fafafa", fontFamily: "Impact", align : 'center', fontSize: 32});
     text.x = 40;
     text.y = 20;  
+
+    //Highscore Text
+    highScoreText = new PIXI.Text('0', {fill: "#fafafa", fontFamily: "Impact", align : 'center', fontSize: 20});
+    highScoreText.x = window.innerWidth / 10;
+    highScoreText.y = window.innerHeight / 10;
 
     // Game background
     game_background = new PIXI.Graphics();
@@ -215,6 +222,7 @@ function playerJump() {
     PIXI.Ticker.shared.add(tick);
 }
 
+//Game Loop
 function gameLoop() {
     if (!player.playing) {
         player.textures = playerSheet.running;
@@ -241,12 +249,18 @@ function gameLoop() {
     let milliSeconds = new Date() - startTime;
 
     //console.log(Math.round(milliSeconds/1000) + " seconds");
-    Score = Math.round(milliSeconds/1000 * spikeSpeed/4);
-    text.text = 'Score: ' + (Score).toString();
+    score = Math.round(milliSeconds/1000 * spikeSpeed/4);
+    text.text = 'Score: ' + (score).toString();
+
+    if (score > highScore) {
+        highScore = score;
+    }
+
+    highScoreText.text = 'HighScore: ' + highScore.toString();
     moveSpike();
 
     if (gameOver) {
-        Score = 0;
+        score = 0;
         gameOver = false;
         app.ticker.stop();
         scene3.visible = true;
@@ -271,9 +285,11 @@ function gameLoop() {
     }
 }
 
+//Spawner
 function createSpikes() {
     var val = Math.floor(Math.random() * 3) + 1;
     let spike;
+    //Random sprites
     switch(val) {
         case 1:
             spike = new PIXI.Sprite.from("images/cactus1.png");
@@ -297,6 +313,7 @@ function createSpikes() {
     return spike;
 }
 
+//Move spikes
 function moveSpike() {
     for (let i = 0; i < spikes.length; i++) {
         spikes[i].position.x -= spikes[i].speed * app.ticker.deltaTime;
@@ -338,7 +355,9 @@ window.onresize = function(){
     app.renderer.resize(window.innerWidth, window.innerHeight);
     player.x = app.view.width / 2;
     player.y = app.view.height / 2;
-    
+    //Resize high score text
+    highScoreText.x = window.innerWidth / 10;
+    highScoreText.y = window.innerHeight / 10;
 };
 
 // Calling needed functions
@@ -352,7 +371,7 @@ function onButtonDown() {
     app.loader.add("DinoSpritesdoux", "images/dinoCharactersVersion1.1/sheets/DinoSprites - doux.png");
     app.loader.load(doneLoading);
     scene2.addChild(text);
-
+    scene2.addChild(highScoreText);
     jumpAt = app.view.height / 2;
     //Mouse click interactions
     app.view.addEventListener('click', playerJump);
