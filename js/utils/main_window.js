@@ -7,22 +7,28 @@ let spikeSpeed = 3;
 let spikes = [];
 var timer = 100, range = 100;
 
+let home_background, game_background, over;
 let gameOver = false;
 let playerSheet = {};
-
-let home_background, game_background, over;
+let startTime;
+let text;
 
 window.onload = function() {
     app = new PIXI.Application(
         {
             width: window.innerWidth,
             height: window.innerHeight,
-            backgroundColor: 0xffffff
+            backgroundColor: 0x34e5eb
         }
     );
     document.body.appendChild(app.view);
 
-    // Declare over image
+    // Declare score
+    text = new PIXI.Text('0',{fill: "#fafafa", fontFamily: "Impact", align : 'center', fontSize: 32});
+    text.x = 40;
+    text.y = 20;    
+
+    // Declare game over notification
     over = new PIXI.Sprite.from("images/gameover.png");
     over.anchor.set(0.5);
     over.x = window.innerWidth / 2;
@@ -55,12 +61,8 @@ window.onload = function() {
                         window.innerHeight);
     game_background.endFill();
 
-
     home_background.addChild(button);
     app.stage.addChild(home_background);
-
-
-
 
     //Platform
     background = new PIXI.Graphics();
@@ -70,6 +72,7 @@ window.onload = function() {
                         window.innerWidth,
                         window.innerHeight);
     background.endFill();
+
     // app.stage.addChild(background);
 
     //player = new PIXI.Sprite.from('images/ezgif-4-0c1b2d3b5e-png-24x24-sprite-png/tile000.png');
@@ -92,8 +95,7 @@ window.onload = function() {
     });
 }
 
-
-function doneLoading(e) {
+function doneLoading() {
     createPlayerSheet();
     createPlayer();
     app.ticker.add(gameLoop);
@@ -195,9 +197,10 @@ function gameLoop() {
         }
         if (range >= 20)
             range -= 1;
-        // console.log(timer);
     }
-
+    let milliSeconds = new Date() - startTime;
+    //console.log(Math.round(milliSeconds/1000) + " seconds");
+    text.text = 'Score: ' + (Math.round(milliSeconds/1000 * spikeSpeed/4)).toString();
     moveSpike();
     
 }
@@ -231,12 +234,14 @@ function moveSpike() {
     for (let i = 0; i < spikes.length; i++) {
         spikes[i].position.x -= spikes[i].speed * app.ticker.deltaTime;
 
-        
         if (rectIntersects(player, spikes[i])) {
+
+            
+            app.stage.addChild(over);
+            
             player.textures = playerSheet.dead;
+
             player.play();
-            app.ticker.stop();
-            console.log("true");
             app.ticker.stop();
         }
 
@@ -273,10 +278,12 @@ window.onresize = function(){
 
 // Calling needed functions
 function onButtonDown() {
-    this.isdown = false;
+    startTime = new Date();
+    this.isdown = true;
     app.stage.addChild(game_background);
     app.stage.addChild(background);
-    app.stage.addChild(player);
-    app.ticker.add(gameLoop);
+    app.loader.add("DinoSpritesdoux", "images/dinoCharactersVersion1.1/sheets/DinoSprites - doux.png");
+    app.loader.load(doneLoading);
+    app.stage.addChild(text);
     this.interactive = false;
 }
