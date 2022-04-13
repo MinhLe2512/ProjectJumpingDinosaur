@@ -90,7 +90,7 @@ window.onload = function() {
     window.addEventListener("keyup", function(e) {
         keys[e.keyCode] = false;
     });
-
+}
 
 
 function doneLoading(e) {
